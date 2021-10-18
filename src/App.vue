@@ -1,17 +1,51 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="container">
+    <div v-if="loading" class="load-container">
+      <div class="loader">
+        <img src="@/assets/spin.gif" style="width:60%;" />
+      </div>
+    </div>
+    <div v-else class="main">
+      <router-view v-slot="{ Component }">
+        <transition name="slide-fade">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+// import Home from './components/home/Home.vue';
+import { mapActions,mapMutations } from "vuex";
 export default {
-  name: 'App',
+  name: "App",
+  data() {
+    return {
+      checkedData: [],
+    };
+  },
   components: {
-    HelloWorld
-  }
-}
+    //   Home
+  },
+  computed: {
+    loading() {
+      return this.$store.getters.getloading
+    }
+  },
+  methods: {
+    ...mapActions(['actInfo']),
+    ...mapMutations(['setContentList'])
+  },
+  created() {
+    this.errMsg = ""
+    this.actInfo().then((res) => {
+      this.setContentList(res._embedded.episodes)
+    }).catch(err => {
+      this.err = err;
+    });
+  },
+};
 </script>
 
 <style>
@@ -19,8 +53,38 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+.slide-fade-enter-active {
+  transition: all 0.7s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+.loader {
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  position: fixed;
+}
+.load-container {
+  width: 100%;
+  height: 100%;
+  background-color: bisque;
+  position: fixed;
+}
+.main {
+  margin: 25px;
 }
 </style>
