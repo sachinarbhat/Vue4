@@ -17,7 +17,7 @@
 
 <script>
 // import Home from './components/home/Home.vue';
-import { mapActions,mapMutations } from "vuex";
+import { mapActions,mapMutations,mapGetters} from "vuex";
 export default {
   name: "App",
   data() {
@@ -29,8 +29,9 @@ export default {
     //   Home
   },
   computed: {
+    ...mapGetters(['getloading']),
     loading() {
-      return this.$store.getters.getloading
+      return this.getloading
     }
   },
   methods: {
